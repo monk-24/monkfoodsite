@@ -101,3 +101,19 @@ document.addEventListener("submit", function (e) {
     io.observe(el);
   });
 })();
+
+/* 5. Sticky mobile action bar (Call / Contact) — shown only on phones via CSS.
+   Skipped on the admin app page. */
+(function () {
+  if (document.body.classList.contains("admin-body")) return;
+  if (document.querySelector(".mobile-bar")) return;
+  var inBlog = location.pathname.indexOf("/blog/") > -1;
+  var contactHref = (inBlog ? "../" : "") + "contact";
+  var bar = document.createElement("div");
+  bar.className = "mobile-bar";
+  bar.innerHTML =
+    '<a class="call" href="tel:+443300435064">📞 Call</a>' +
+    '<a class="sales" href="' + contactHref + '">Contact Sales</a>';
+  document.body.appendChild(bar);
+  document.body.classList.add("has-mobile-bar");
+})();

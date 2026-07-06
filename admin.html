@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0d0d">
 <meta name="robots" content="noindex, nofollow">
 <title>Admin — Monk Food Blog</title>
 <link rel="icon" href="assets/logo.png">
@@ -303,7 +304,7 @@
     var coverBlock=d.coverRel?'<div class="post-cover"><img src="'+escAttr(d.coverRel)+'" alt="'+escAttr(d.title)+'"></div>':'';
     var tagChip=(d.tags&&d.tags[0])?'<span class="tag-chip">'+escHtml(d.tags[0])+'</span>':'';
     return '<!DOCTYPE html>\n<html lang="en">\n<head>\n'+
-      '<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'+
+      '<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<meta name="theme-color" content="#0d0d0d">\n'+
       '<title>'+escHtml(d.title)+' — Monk Food</title>\n'+
       '<meta name="description" content="'+escAttr(d.description)+'">\n'+
       '<meta name="robots" content="index, follow">\n'+

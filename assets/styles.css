@@ -336,3 +336,83 @@ form.card{padding:36px}
 .lock-screen{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;padding:24px;z-index:100}
 .lock-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px;width:100%;max-width:380px;box-shadow:var(--shadow)}
 .lock-card .field{margin-bottom:14px}
+
+/* ===== Mobile-first optimisations (90% of traffic is mobile) ===== */
+html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+
+@media(max-width:768px){
+  :root{--radius:14px}
+  section{padding:54px 0}
+  .container{padding:0 18px}
+  h1{font-size:clamp(2rem,8.5vw,2.9rem)}
+  h2{font-size:clamp(1.55rem,6vw,2.1rem)}
+  .lead{font-size:1.05rem}
+  .eyebrow{margin-bottom:16px}
+
+  /* Header: slimmer, hide desktop CTAs (bottom bar handles actions) */
+  .site-header{background:rgba(242,241,237,.94)}
+  .nav{height:60px}
+  .brand{font-size:1.05rem}
+  .brand img{height:30px}
+  .nav-cta{display:none}
+  .menu-btn{font-size:1.7rem;padding:4px 6px}
+  .nav-links.open{gap:4px;padding:14px 18px 20px}
+  .nav-links.open a{display:block;padding:12px 4px;font-size:1.06rem;border-bottom:1px solid var(--line)}
+  .nav-links.open a::after{display:none}
+  .nav-links.open li:last-child a{border-bottom:0}
+
+  /* Buttons: full-width, comfy tap size */
+  .btn{padding:15px 24px;font-size:1rem}
+  .hero-actions{flex-direction:column;align-items:stretch;gap:12px}
+  .hero-actions .btn,.cta-band .btn{width:100%;justify-content:center}
+
+  /* Hero */
+  .hero{background-size:22px 22px}
+  .hero .container{gap:34px}
+  .hero-copy .lead{margin:18px 0 26px}
+  .hero-stats{gap:0;justify-content:space-between;width:100%;margin-top:34px}
+  .hero-stats>div{flex:1}
+  .hero-stats .num{font-size:1.7rem}
+  .hero-stats .lbl{font-size:.76rem}
+  .hero-art{padding:18px}
+
+  /* Prevent iOS auto-zoom on focus (needs >=16px) */
+  .field input,.field select,.field textarea,#lockPass{font-size:16px}
+
+  /* Cards / spacing */
+  .card{padding:24px}
+  .cta-band{padding:36px 22px}
+  .split{gap:30px}
+  .panel{padding:22px}
+
+  /* Blog post readability */
+  .prose{font-size:1.04rem}
+  .post-wrap{padding-left:2px;padding-right:2px}
+}
+
+@media(max-width:400px){
+  h1{font-size:1.85rem}
+  .hero-stats .num{font-size:1.5rem}
+  .marquee span{font-size:1.05rem}
+}
+
+/* ===== Sticky mobile action bar (Call / Contact) ===== */
+.mobile-bar{display:none}
+@media(max-width:768px){
+  .mobile-bar{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;gap:10px;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+    background:rgba(255,255,255,.94);backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);box-shadow:0 -6px 24px -12px rgba(0,0,0,.3);
+  }
+  .mobile-bar a{
+    flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    height:50px;border-radius:999px;font-weight:600;font-size:1rem;
+    border:1.5px solid var(--black);text-decoration:none;
+  }
+  .mobile-bar .call{background:#fff;color:var(--black)}
+  .mobile-bar .sales{background:var(--black);color:#fff}
+  body.has-mobile-bar{padding-bottom:78px}
+  /* keep footer clear of the bar */
+  body.has-mobile-bar .site-footer{padding-bottom:40px}
+}
