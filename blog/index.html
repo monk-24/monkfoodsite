@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Monk Food | Ordering, EPOS & Restaurant Growth</title>
+<meta name="description" content="Guides and ideas on online ordering, EPOS, QR ordering and driving more sales for restaurants, takeaways and bars — from the Monk Food team.">
+<link rel="canonical" href="blog/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Monk Food">
+<meta property="og:title" content="Monk Food Blog — Ordering, EPOS & Restaurant Growth">
+<meta property="og:description" content="Guides on online ordering, EPOS, QR ordering and driving more sales for hospitality.">
+<meta property="og:image" content="../assets/logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Blog","name":"Monk Food Blog","description":"Guides on online ordering, EPOS, QR ordering and driving more sales for hospitality.","publisher":{"@type":"Organization","name":"Monk Food"}}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav">
+    <a href="../" class="brand"><img src="../assets/logo.png" alt="Monk Food logo"> Monk Food</a>
+    <ul class="nav-links">
+      <li><a href="../">Home</a></li>
+      <li><a href="../services">Services</a></li>
+      <li><a href="../about">About</a></li>
+      <li><a href="./" class="active">Blog</a></li>
+      <li><a href="../contact">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="../contact" class="btn btn-ghost">Contact Sales</a>
+      <a href="../contact" class="btn btn-primary">Book a Demo</a>
+    </div>
+    <button class="menu-btn" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Monk Food blog</span>
+    <h1>Ideas to grow your hospitality business</h1>
+    <p class="lead">Practical guides on online ordering, EPOS, QR ordering and marketing that brings customers through your door.</p>
+  </div>
+</section>
+
+<section style="padding-top:40px">
+  <div class="container">
+    <div id="postList" class="blog-grid"></div>
+    <div id="emptyState" class="blog-empty" style="display:none">
+      <p>No posts yet — check back soon for guides and updates from the Monk Food team.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <a href="../" class="brand"><img src="../assets/logo.png" alt="Monk Food logo"> Monk Food</a>
+      <p class="about">Online ordering, EPOS and QR code ordering — plus the marketing to bring you sales. For restaurants, takeaways and bars.</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <ul>
+        <li><a href="../services">Online Ordering</a></li>
+        <li><a href="../services">EPOS Solutions</a></li>
+        <li><a href="../services">QR Code Ordering</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="../about">About Us</a></li>
+        <li><a href="./">Blog</a></li>
+        <li><a href="../contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Get in touch</h4>
+      <ul>
+        <li><a href="mailto:monkfoodanalystic@gmail.com">monkfoodanalystic@gmail.com</a></li>
+        <li><a href="../contact">Request a callback</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Monk Food. All rights reserved.</span>
+    <span>Made for hospitality 🍽️</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var list = document.getElementById('postList');
+  var empty = document.getElementById('emptyState');
+  function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function fmt(d){try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return d;}}
+  fetch('posts.json?cache=' + Date.now())
+    .then(function(r){return r.ok ? r.json() : [];})
+    .then(function(posts){
+      if(!posts || !posts.length){ empty.style.display='block'; return; }
+      list.innerHTML = posts.map(function(p){
+        var img = p.cover ? '<div class="thumb"><img src="'+esc(p.cover)+'" alt="'+esc(p.title)+'" loading="lazy"></div>' : '';
+        var tag = (p.tags && p.tags[0]) ? '<span class="tag-chip">'+esc(p.tags[0])+'</span>' : '';
+        return '<a class="post-card" href="'+esc(p.slug)+'">'+img+
+          '<div class="body">'+tag+
+          '<h3>'+esc(p.title)+'</h3>'+
+          '<p>'+esc(p.description||'')+'</p>'+
+          '<div class="meta">'+fmt(p.date)+(p.readingTime?' · '+esc(p.readingTime):'')+'</div>'+
+          '</div></a>';
+      }).join('');
+    })
+    .catch(function(){ empty.style.display='block'; });
+})();
+</script>
+</body>
+</html>

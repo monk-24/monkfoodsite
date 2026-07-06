@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Monk Food Blog</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+
+  <div class="admin-top">
+    <a href="./" class="brand"><img src="assets/logo.png" alt="Monk Food logo"> Monk Food · Admin</a>
+    <div style="display:flex;gap:10px">
+      <a href="blog/" class="btn-sm">View blog ↗</a>
+      <button class="btn-sm" id="logoutBtn" style="display:none">Lock</button>
+    </div>
+  </div>
+  <p class="hint" style="color:var(--muted);margin-bottom:22px">Write blog posts with images and publish them straight to your live site.</p>
+
+  <!-- Connection / settings -->
+  <div class="admin-card" id="connectCard">
+    <h2>Connect to GitHub</h2>
+    <p class="hint">Your posts are saved by committing them to your GitHub repository. Enter your details once — they're stored only in this browser.</p>
+    <div class="row2">
+      <div class="field"><label>Site URL (your live domain)</label><input id="cfgSite" placeholder="https://monkfood.com"></div>
+      <div class="field"><label>Branch</label><input id="cfgBranch" placeholder="main" value="main"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>GitHub username / owner</label><input id="cfgOwner" placeholder="your-github-username"></div>
+      <div class="field"><label>Repository name</label><input id="cfgRepo" placeholder="monk-food-website"></div>
+    </div>
+    <div class="field"><label>GitHub access token</label><input id="cfgToken" type="password" placeholder="github_pat_..."></div>
+    <p class="hint">Create a fine-grained token with <strong>Contents: Read and write</strong> access to this one repo (GitHub → Settings → Developer settings → Personal access tokens). The token stays in your browser only.</p>
+    <button class="btn btn-primary" id="connectBtn">Save &amp; connect</button>
+    <div class="admin-status" id="connectStatus"></div>
+  </div>
+
+  <!-- App (hidden until connected) -->
+  <div id="app" style="display:none">
+    <div class="pill-tabs">
+      <button data-tab="write" class="active">✍️ Write post</button>
+      <button data-tab="manage">🗂️ Manage posts</button>
+    </div>
+
+    <!-- Write -->
+    <div id="tab-write">
+      <div class="admin-card">
+        <div class="field"><label>Title</label><input id="pTitle" placeholder="e.g. 5 ways QR ordering boosts table turnover"></div>
+        <div class="row2">
+          <div class="field"><label>URL slug</label><input id="pSlug" placeholder="qr-ordering-table-turnover"></div>
+          <div class="field"><label>Tags (comma separated)</label><input id="pTags" placeholder="QR Ordering, Growth"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Author</label><input id="pAuthor" value="Monk Food Team"></div>
+          <div class="field"><label>Meta description (for Google / AI)</label><input id="pDesc" placeholder="One sentence summary shown in search results."></div>
+        </div>
+        <div class="field">
+          <label>Cover image</label>
+          <div class="cover-drop" id="coverDrop">Click to upload a cover image (16:9 works best)</div>
+          <input type="file" id="coverInput" accept="image/*" hidden>
+          <div class="cover-preview" id="coverPreview"><img id="coverImg" alt="cover"></div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <label style="display:block;font-weight:500;font-size:.88rem;margin-bottom:7px">Post content</label>
+        <div class="toolbar" id="toolbar">
+          <button type="button" data-cmd="formatBlock" data-val="h2" title="Heading">H2</button>
+          <button type="button" data-cmd="formatBlock" data-val="h3" title="Subheading">H3</button>
+          <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+          <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+          <button type="button" data-cmd="insertUnorderedList" title="Bullet list">• List</button>
+          <button type="button" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+          <button type="button" data-cmd="formatBlock" data-val="blockquote" title="Quote">❝</button>
+          <button type="button" data-cmd="createLink" title="Link">🔗</button>
+          <button type="button" data-cmd="insertImage" title="Insert image">🖼️ Image</button>
+          <button type="button" data-cmd="removeFormat" title="Clear formatting">✕</button>
+        </div>
+        <div class="editor" id="editor" contenteditable="true" data-ph="Start writing your post here..."></div>
+        <input type="file" id="inlineImg" accept="image/*" hidden>
+      </div>
+
+      <div class="admin-status" id="publishStatus"></div>
+      <button class="btn btn-primary" id="publishBtn" style="width:100%;justify-content:center">Publish post →</button>
+    </div>
+
+    <!-- Manage -->
+    <div id="tab-manage" style="display:none">
+      <div class="admin-card">
+        <h2>Published posts</h2>
+        <p class="hint">Delete removes the post page and de-lists it. (Images are left in the repo.)</p>
+        <div id="manageList"></div>
+        <div class="admin-status" id="manageStatus"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var LS = "mf_admin_cfg";
+  var cfg = null;
+  var cover = null; // {b64, ext}
+  var slugTouched = false;
+  var $ = function(id){return document.getElementById(id);};
+
+  // ---------- helpers ----------
+  function b64(str){return btoa(unescape(encodeURIComponent(str)));}
+  function escAttr(s){return String(s||"").replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function escHtml(s){return String(s||"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function slugify(s){return String(s||"").toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,70);}
+  function status(el,type,msg,detail){el.className='admin-status '+type;el.innerHTML=msg+(detail?'<pre>'+escHtml(detail)+'</pre>':'');}
+  function trimSlash(u){return String(u||"").replace(/\/+$/,'');}
+  function extFromMime(m){var map={'image/jpeg':'jpg','image/jpg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/svg+xml':'svg'};return map[m]||'png';}
+
+  // ---------- GitHub API ----------
+  function api(path,opts){
+    opts=opts||{};
+    opts.headers=Object.assign({
+      'Authorization':'Bearer '+cfg.token,
+      'Accept':'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28'
+    },opts.headers||{});
+    return fetch('https://api.github.com'+path,opts);
+  }
+  function contentsUrl(p){return '/repos/'+cfg.owner+'/'+cfg.repo+'/contents/'+p.split('/').map(encodeURIComponent).join('/');}
+  async function getFile(p){
+    var r=await api(contentsUrl(p)+'?ref='+encodeURIComponent(cfg.branch)+'&t='+Date.now());
+    if(r.status===404) return null;
+    if(!r.ok) throw new Error('GET '+p+' → '+r.status+' '+(await r.text()));
+    var j=await r.json();
+    var text=j.content?decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))):'';
+    return {sha:j.sha,text:text};
+  }
+  async function putFile(p,contentB64,message,sha){
+    var body={message:message,content:contentB64,branch:cfg.branch};
+    if(sha) body.sha=sha;
+    var r=await api(contentsUrl(p),{method:'PUT',body:JSON.stringify(body)});
+    if(!r.ok) throw new Error('PUT '+p+' → '+r.status+' '+(await r.text()));
+    return r.json();
+  }
+  async function putText(p,text,message){
+    var existing=await getFile(p);
+    return putFile(p,b64(text),message,existing?existing.sha:null);
+  }
+  async function deleteFile(p,message){
+    var f=await getFile(p);
+    if(!f) return;
+    var r=await api(contentsUrl(p),{method:'DELETE',body:JSON.stringify({message:message,sha:f.sha,branch:cfg.branch})});
+    if(!r.ok) throw new Error('DELETE '+p+' → '+r.status);
+  }
+
+  // ---------- config ----------
+  function loadCfg(){try{return JSON.parse(localStorage.getItem(LS));}catch(e){return null;}}
+  function saveCfg(c){localStorage.setItem(LS,JSON.stringify(c));}
+
+  async function connect(){
+    var c={
+      siteUrl:trimSlash($('cfgSite').value.trim()),
+      branch:$('cfgBranch').value.trim()||'main',
+      owner:$('cfgOwner').value.trim(),
+      repo:$('cfgRepo').value.trim(),
+      token:$('cfgToken').value.trim()
+    };
+    if(!c.siteUrl||!c.owner||!c.repo||!c.token){status($('connectStatus'),'err','Please fill in all fields.');return;}
+    cfg=c;
+    status($('connectStatus'),'info','Checking connection…');
+    try{
+      var r=await api('/repos/'+c.owner+'/'+c.repo);
+      if(!r.ok) throw new Error('Repo check failed ('+r.status+'). Check the owner, repo name and token permissions.');
+      saveCfg(c);
+      status($('connectStatus'),'ok','Connected to '+c.owner+'/'+c.repo+'. You can write posts now.');
+      showApp();
+    }catch(e){cfg=null;status($('connectStatus'),'err','Could not connect.',e.message);}
+  }
+
+  function showApp(){
+    $('connectCard').style.display='none';
+    $('app').style.display='block';
+    $('logoutBtn').style.display='inline-block';
+    loadManage();
+  }
+
+  // ---------- editor ----------
+  function initEditor(){
+    $('toolbar').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      var cmd=b.dataset.cmd, val=b.dataset.val||null;
+      $('editor').focus();
+      if(cmd==='createLink'){var u=prompt('Link URL:','https://');if(u) document.execCommand('createLink',false,u);return;}
+      if(cmd==='insertImage'){$('inlineImg').click();return;}
+      if(cmd==='formatBlock'){document.execCommand('formatBlock',false,val);return;}
+      document.execCommand(cmd,false,val);
+    });
+    $('inlineImg').addEventListener('change',function(e){
+      var f=e.target.files[0]; if(!f) return;
+      var rd=new FileReader();
+      rd.onload=function(){document.execCommand('insertImage',false,rd.result);};
+      rd.readAsDataURL(f); e.target.value='';
+    });
+  }
+
+  // ---------- cover ----------
+  function initCover(){
+    $('coverDrop').addEventListener('click',function(){$('coverInput').click();});
+    $('coverInput').addEventListener('change',function(e){
+      var f=e.target.files[0]; if(!f) return;
+      var rd=new FileReader();
+      rd.onload=function(){
+        var d=rd.result; var comma=d.indexOf(',');
+        cover={b64:d.slice(comma+1),ext:extFromMime(f.type)};
+        $('coverImg').src=d; $('coverPreview').style.display='block';
+        $('coverDrop').textContent='Cover added — click to replace';
+      };
+      rd.readAsDataURL(f);
+    });
+  }
+
+  // ---------- title/slug ----------
+  function initTitle(){
+    $('pTitle').addEventListener('input',function(){if(!slugTouched)$('pSlug').value=slugify($('pTitle').value);});
+    $('pSlug').addEventListener('input',function(){slugTouched=true;$('pSlug').value=slugify($('pSlug').value);});
+  }
+
+  // ---------- publish ----------
+  async function readPosts(){
+    var f=await getFile('blog/posts.json');
+    if(!f||!f.text.trim()) return [];
+    try{return JSON.parse(f.text);}catch(e){return [];}
+  }
+  function readingTime(html){
+    var words=html.replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1,Math.round(words/200))+' min read';
+  }
+  function buildSitemap(posts){
+    var s=cfg.siteUrl;
+    var urls=[
+      [s+'/','weekly','1.0'],[s+'/services','monthly','0.8'],
+      [s+'/about','monthly','0.6'],[s+'/contact','monthly','0.7'],
+      [s+'/blog/','weekly','0.9']
+    ];
+    var body=urls.map(function(u){return '  <url><loc>'+escHtml(u[0])+'</loc><changefreq>'+u[1]+'</changefreq><priority>'+u[2]+'</priority></url>';});
+    posts.forEach(function(p){
+      body.push('  <url><loc>'+escHtml(s+'/blog/'+p.slug)+'</loc><lastmod>'+(p.date||'').slice(0,10)+'</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>');
+    });
+    return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+body.join('\n')+'\n</urlset>\n';
+  }
+  function buildPostHtml(d){
+    var url=cfg.siteUrl+'/blog/'+d.slug;
+    var ogImg=d.coverAbs||(cfg.siteUrl+'/assets/logo.png');
+    var ld={
+      "@context":"https://schema.org","@type":"Article",
+      "headline":d.title,"description":d.description,"image":[ogImg],
+      "datePublished":d.dateISO,"dateModified":d.dateISO,
+      "author":{"@type":"Organization","name":d.author||"Monk Food"},
+      "publisher":{"@type":"Organization","name":"Monk Food","logo":{"@type":"ImageObject","url":cfg.siteUrl+"/assets/logo.png"}},
+      "mainEntityOfPage":{"@type":"WebPage","@id":url},
+      "keywords":(d.tags||[]).join(", ")
+    };
+    var coverBlock=d.coverRel?'<div class="post-cover"><img src="'+escAttr(d.coverRel)+'" alt="'+escAttr(d.title)+'"></div>':'';
+    var tagChip=(d.tags&&d.tags[0])?'<span class="tag-chip">'+escHtml(d.tags[0])+'</span>':'';
+    return '<!DOCTYPE html>\n<html lang="en">\n<head>\n'+
+      '<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'+
+      '<title>'+escHtml(d.title)+' — Monk Food</title>\n'+
+      '<meta name="description" content="'+escAttr(d.description)+'">\n'+
+      '<meta name="robots" content="index, follow">\n'+
+      '<link rel="canonical" href="'+escAttr(url)+'">\n'+
+      '<meta property="og:type" content="article">\n'+
+      '<meta property="og:site_name" content="Monk Food">\n'+
+      '<meta property="og:title" content="'+escAttr(d.title)+'">\n'+
+      '<meta property="og:description" content="'+escAttr(d.description)+'">\n'+
+      '<meta property="og:image" content="'+escAttr(ogImg)+'">\n'+
+      '<meta property="og:url" content="'+escAttr(url)+'">\n'+
+      '<meta property="article:published_time" content="'+escAttr(d.dateISO)+'">\n'+
+      '<meta name="twitter:card" content="summary_large_image">\n'+
+      '<link rel="icon" href="../assets/logo.png">\n'+
+      '<link rel="preconnect" href="https://fonts.googleapis.com">\n'+
+      '<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">\n'+
+      '<link rel="stylesheet" href="../assets/styles.css">\n'+
+      '<script type="application/ld+json">'+JSON.stringify(ld)+'<\/script>\n'+
+      '</head>\n<body>\n'+
+      '<header class="site-header">\n  <div class="container nav">\n'+
+      '    <a href="../" class="brand"><img src="../assets/logo.png" alt="Monk Food logo"> Monk Food</a>\n'+
+      '    <ul class="nav-links">\n'+
+      '      <li><a href="../">Home</a></li>\n      <li><a href="../services">Services</a></li>\n'+
+      '      <li><a href="../about">About</a></li>\n      <li><a href="./" class="active">Blog</a></li>\n'+
+      '      <li><a href="../contact">Contact</a></li>\n    </ul>\n'+
+      '    <div class="nav-cta"><a href="../contact" class="btn btn-ghost">Contact Sales</a><a href="../contact" class="btn btn-primary">Book a Demo</a></div>\n'+
+      '    <button class="menu-btn" aria-label="Menu">☰</button>\n  </div>\n</header>\n'+
+      '<main><article class="container post-wrap" style="padding-top:40px;padding-bottom:20px">\n'+
+      '  <a href="./" class="back-link">← All posts</a>\n'+
+      '  '+tagChip+'\n  <h1 style="font-size:clamp(2rem,4vw,3rem)">'+escHtml(d.title)+'</h1>\n'+
+      '  <div class="post-meta">'+escHtml(d.dateHuman)+' · '+escHtml(d.readingTime)+' · By '+escHtml(d.author)+'</div>\n'+
+      '  '+coverBlock+'\n'+
+      '  <div class="prose">'+d.contentHtml+'</div>\n'+
+      '</article>\n'+
+      '<section style="padding-top:20px"><div class="container"><div class="cta-band">'+
+      '<h2>Want this working in your venue?</h2><p>Monk Food gives you the ordering tech and drives the sales. Talk to our team.</p>'+
+      '<a href="../contact" class="btn btn-light">Contact Sales →</a></div></div></section>\n'+
+      '</main>\n'+
+      '<footer class="site-footer"><div class="container footer-grid">'+
+      '<div><a href="../" class="brand"><img src="../assets/logo.png" alt="Monk Food logo"> Monk Food</a>'+
+      '<p class="about">Online ordering, EPOS and QR code ordering — plus the marketing to bring you sales.</p></div>'+
+      '<div><h4>Product</h4><ul><li><a href="../services">Online Ordering</a></li><li><a href="../services">EPOS Solutions</a></li><li><a href="../services">QR Code Ordering</a></li></ul></div>'+
+      '<div><h4>Company</h4><ul><li><a href="../about">About Us</a></li><li><a href="./">Blog</a></li><li><a href="../contact">Contact</a></li></ul></div>'+
+      '<div><h4>Get in touch</h4><ul><li><a href="mailto:monkfoodanalystic@gmail.com">monkfoodanalystic@gmail.com</a></li></ul></div>'+
+      '</div><div class="container footer-bottom"><span>© 2026 Monk Food. All rights reserved.</span><span>Made for hospitality 🍽️</span></div></footer>\n'+
+      '<script src="../assets/main.js"><\/script>\n</body>\n</html>\n';
+  }
+
+  async function publish(){
+    var st=$('publishStatus');
+    var title=$('pTitle').value.trim();
+    var slug=slugify($('pSlug').value||title);
+    var desc=$('pDesc').value.trim();
+    if(!title){status(st,'err','Please add a title.');return;}
+    if(!slug){status(st,'err','Please add a URL slug.');return;}
+    if(!desc){status(st,'err','Please add a meta description (helps Google and AI).');return;}
+    var tags=$('pTags').value.split(',').map(function(t){return t.trim();}).filter(Boolean);
+    var author=$('pAuthor').value.trim()||'Monk Food Team';
+
+    $('publishBtn').disabled=true;
+    try{
+      status(st,'info','Loading current posts…');
+      var posts=await readPosts();
+      if(posts.some(function(p){return p.slug===slug;})){
+        slug=slug+'-'+Date.now().toString().slice(-4);
+      }
+
+      // clone editor content and upload inline images
+      var holder=document.createElement('div');
+      holder.innerHTML=$('editor').innerHTML;
+      var imgs=holder.querySelectorAll('img');
+      var i;
+      for(i=0;i<imgs.length;i++){
+        var src=imgs[i].getAttribute('src')||'';
+        if(src.indexOf('data:')!==0) continue;
+        var comma=src.indexOf(','); var meta=src.slice(5,comma);
+        var mime=meta.split(';')[0]; var ext=extFromMime(mime);
+        var data=src.slice(comma+1);
+        var name='images/'+slug+'-'+(i+1)+'.'+ext;
+        status(st,'info','Uploading image '+(i+1)+'…');
+        await putFile('blog/'+name,data,'blog: image for '+slug);
+        imgs[i].setAttribute('src',name);
+        imgs[i].setAttribute('loading','lazy');
+      }
+      var contentHtml=holder.innerHTML.trim();
+      if(!contentHtml){status(st,'err','Please write some post content.');$('publishBtn').disabled=false;return;}
+
+      // cover
+      var coverRel=null, coverAbs=null;
+      if(cover){
+        coverRel='images/'+slug+'-cover.'+cover.ext;
+        status(st,'info','Uploading cover image…');
+        await putFile('blog/'+coverRel,cover.b64,'blog: cover for '+slug);
+        coverAbs=cfg.siteUrl+'/blog/'+coverRel;
+      }
+
+      var now=new Date();
+      var d={
+        slug:slug,title:title,description:desc,tags:tags,author:author,
+        contentHtml:contentHtml,coverRel:coverRel,coverAbs:coverAbs,
+        dateISO:now.toISOString(),
+        dateHuman:now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+        readingTime:readingTime(contentHtml)
+      };
+
+      status(st,'info','Publishing post page…');
+      await putText('blog/'+slug+'.html',buildPostHtml(d),'blog: publish '+slug);
+
+      status(st,'info','Updating blog index…');
+      posts.unshift({slug:slug,title:title,description:desc,cover:coverRel,tags:tags,author:author,date:d.dateISO,readingTime:d.readingTime});
+      await putText('blog/posts.json',JSON.stringify(posts,null,2),'blog: index '+slug);
+
+      status(st,'info','Updating sitemap…');
+      await putText('sitemap.xml',buildSitemap(posts),'blog: sitemap '+slug);
+
+      status(st,'ok','Published! Your post is live at '+cfg.siteUrl+'/blog/'+slug+' (GitHub Pages can take a minute to update).');
+      $('pTitle').value='';$('pSlug').value='';$('pDesc').value='';$('pTags').value='';
+      $('editor').innerHTML='';cover=null;slugTouched=false;
+      $('coverPreview').style.display='none';$('coverDrop').textContent='Click to upload a cover image (16:9 works best)';
+      loadManage();
+    }catch(e){
+      status(st,'err','Publish failed.',e.message);
+    }finally{
+      $('publishBtn').disabled=false;
+    }
+  }
+
+  // ---------- manage ----------
+  async function loadManage(){
+    var wrap=$('manageList');
+    wrap.innerHTML='<p class="hint">Loading…</p>';
+    try{
+      var posts=await readPosts();
+      if(!posts.length){wrap.innerHTML='<p class="hint">No posts published yet.</p>';return;}
+      wrap.innerHTML='';
+      posts.forEach(function(p){
+        var row=document.createElement('div');row.className='post-row';
+        var thumb=p.cover?'<img class="pr-thumb" src="blog/'+escAttr(p.cover)+'" alt="">':'<div class="pr-thumb"></div>';
+        row.innerHTML=thumb+
+          '<div class="pr-info"><strong>'+escHtml(p.title)+'</strong>'+
+          '<span>/blog/'+escHtml(p.slug)+' · '+escHtml((p.date||'').slice(0,10))+'</span></div>'+
+          '<a class="btn-sm" href="blog/'+escAttr(p.slug)+'" target="_blank">View</a>'+
+          '<button class="btn-sm btn-danger" data-slug="'+escAttr(p.slug)+'">Delete</button>';
+        wrap.appendChild(row);
+      });
+      wrap.querySelectorAll('.btn-danger').forEach(function(b){
+        b.addEventListener('click',function(){delPost(b.dataset.slug);});
+      });
+    }catch(e){wrap.innerHTML='';status($('manageStatus'),'err','Could not load posts.',e.message);}
+  }
+  async function delPost(slug){
+    if(!confirm('Delete "'+slug+'"? This removes the post page and de-lists it.'))return;
+    var st=$('manageStatus');
+    try{
+      status(st,'info','Deleting '+slug+'…');
+      await deleteFile('blog/'+slug+'.html','blog: delete '+slug);
+      var posts=(await readPosts()).filter(function(p){return p.slug!==slug;});
+      await putText('blog/posts.json',JSON.stringify(posts,null,2),'blog: de-list '+slug);
+      await putText('sitemap.xml',buildSitemap(posts),'blog: sitemap update');
+      status(st,'ok','Deleted '+slug+'.');
+      loadManage();
+    }catch(e){status(st,'err','Delete failed.',e.message);}
+  }
+
+  // ---------- tabs ----------
+  function initTabs(){
+    document.querySelectorAll('.pill-tabs button').forEach(function(b){
+      b.addEventListener('click',function(){
+        document.querySelectorAll('.pill-tabs button').forEach(function(x){x.classList.remove('active');});
+        b.classList.add('active');
+        var t=b.dataset.tab;
+        $('tab-write').style.display=t==='write'?'block':'none';
+        $('tab-manage').style.display=t==='manage'?'block':'none';
+        if(t==='manage') loadManage();
+      });
+    });
+  }
+
+  // ---------- boot ----------
+  $('connectBtn').addEventListener('click',connect);
+  $('publishBtn').addEventListener('click',publish);
+  $('logoutBtn').addEventListener('click',function(){localStorage.removeItem(LS);location.reload();});
+  initEditor();initCover();initTitle();initTabs();
+
+  var saved=loadCfg();
+  if(saved){
+    cfg=saved;
+    $('cfgSite').value=saved.siteUrl||'';$('cfgBranch').value=saved.branch||'main';
+    $('cfgOwner').value=saved.owner||'';$('cfgRepo').value=saved.repo||'';$('cfgToken').value=saved.token||'';
+    showApp();
+  }
+})();
+</script>
+</body>
+</html>

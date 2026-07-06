@@ -1,0 +1,15 @@
+{
+  "name": "monk-food-website",
+  "version": "1.0.0",
+  "description": "Monk Food — online ordering, EPOS and QR code ordering. Static marketing site with a Google Sheets contact form.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": ["monk-food", "online-ordering", "epos", "qr-ordering", "hospitality"],
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
