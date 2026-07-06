@@ -11,7 +11,20 @@
 <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body class="admin-body">
-<div class="admin-shell">
+
+<!-- Login gate -->
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-card">
+    <a href="./" class="brand" style="justify-content:center;margin-bottom:6px"><img src="assets/logo.png" alt="Monk Food logo"> Monk Food</a>
+    <h2 style="text-align:center;font-size:1.3rem;margin-bottom:4px">Admin login</h2>
+    <p class="hint" style="text-align:center;margin-bottom:18px">Enter the password to manage the blog.</p>
+    <div class="field"><input id="lockPass" type="password" placeholder="Password" autofocus></div>
+    <button class="btn btn-primary" id="lockBtn" style="width:100%;justify-content:center">Unlock</button>
+    <div class="admin-status" id="lockStatus"></div>
+  </div>
+</div>
+
+<div class="admin-shell" style="display:none">
 
   <div class="admin-top">
     <a href="./" class="brand"><img src="assets/logo.png" alt="Monk Food logo"> Monk Food · Admin</a>
@@ -119,6 +132,25 @@
   function status(el,type,msg,detail){el.className='admin-status '+type;el.innerHTML=msg+(detail?'<pre>'+escHtml(detail)+'</pre>':'');}
   function trimSlash(u){return String(u||"").replace(/\/+$/,'');}
   function extFromMime(m){var map={'image/jpeg':'jpg','image/jpg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/svg+xml':'svg'};return map[m]||'png';}
+
+  // ---------- login gate ----------
+  // SHA-256 of the admin password. To change the password, replace this hash
+  // (generate a new one, or just ask and it can be regenerated).
+  var PASS_HASH="e8b058467ddb192625211adcb47da94aea42bb9f4cd085248a99333bb7fc0503";
+  async function sha256(s){
+    var buf=new TextEncoder().encode(s);
+    var h=await crypto.subtle.digest('SHA-256',buf);
+    return Array.from(new Uint8Array(h)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+  }
+  function unlockUI(){
+    $('lockScreen').style.display='none';
+    document.querySelector('.admin-shell').style.display='block';
+  }
+  async function tryUnlock(){
+    var h=await sha256($('lockPass').value);
+    if(h===PASS_HASH){ sessionStorage.setItem('mf_admin_unlocked','1'); unlockUI(); }
+    else{ status($('lockStatus'),'err','Wrong password. Try again.'); $('lockPass').value=''; }
+  }
 
   // ---------- GitHub API ----------
   function api(path,opts){
@@ -446,9 +478,13 @@
   }
 
   // ---------- boot ----------
+  $('lockBtn').addEventListener('click',tryUnlock);
+  $('lockPass').addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock();});
+  if(sessionStorage.getItem('mf_admin_unlocked')==='1') unlockUI();
+
   $('connectBtn').addEventListener('click',connect);
   $('publishBtn').addEventListener('click',publish);
-  $('logoutBtn').addEventListener('click',function(){localStorage.removeItem(LS);location.reload();});
+  $('logoutBtn').addEventListener('click',function(){localStorage.removeItem(LS);sessionStorage.removeItem('mf_admin_unlocked');location.reload();});
   initEditor();initCover();initTitle();initTabs();
 
   var saved=loadCfg();

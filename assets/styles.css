@@ -331,3 +331,8 @@ form.card{padding:36px}
 .btn-sm:hover{border-color:var(--black)}
 .btn-danger{color:#a12b2b;border-color:#e0b4b4}
 .btn-danger:hover{background:#a12b2b;color:#fff;border-color:#a12b2b}
+
+/* ===== Admin login gate ===== */
+.lock-screen{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;padding:24px;z-index:100}
+.lock-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px;width:100%;max-width:380px;box-shadow:var(--shadow)}
+.lock-card .field{margin-bottom:14px}
