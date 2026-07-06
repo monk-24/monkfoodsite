@@ -265,6 +265,8 @@ form.card{padding:36px}
 
 /* ===== Blog listing ===== */
 .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+@media(max-width:900px){.blog-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.blog-grid{grid-template-columns:1fr;gap:18px}}
 .post-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:.25s cubic-bezier(.4,0,.2,1)}
 .post-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--black)}
 .post-card .thumb{aspect-ratio:16/9;background:var(--cream-2);overflow:hidden}
@@ -415,4 +417,40 @@ html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}
   body.has-mobile-bar{padding-bottom:78px}
   /* keep footer clear of the bar */
   body.has-mobile-bar .site-footer{padding-bottom:40px}
+}
+
+/* ===== More mobile refinements ===== */
+@media(max-width:600px){
+  /* Admin manage rows: wrap neatly instead of overflowing */
+  .post-row{flex-wrap:wrap;gap:10px}
+  .post-row .pr-info{flex:1 1 100%;order:-1}
+  .post-row .pr-thumb{width:52px;height:38px;flex:0 0 52px}
+  .post-row .btn-sm{flex:1}
+  /* Admin toolbar buttons a touch bigger to tap */
+  .toolbar button{height:38px}
+  .pill-tabs button{flex:1}
+  /* Contact info address wraps comfortably */
+  .info-item{gap:12px}
+  /* Post title on small screens */
+  .post-wrap h1{font-size:1.7rem !important;line-height:1.15}
+  .post-meta{font-size:.85rem}
+}
+@media(max-width:768px){
+  /* Blog cards: image a bit shorter so more content shows */
+  .post-card .thumb{aspect-ratio:16/10}
+  .post-card .body{padding:20px}
+}
+
+/* ===== GDPR consent notice ===== */
+.consent{
+  position:fixed;left:16px;right:16px;bottom:16px;z-index:80;max-width:520px;margin:0 auto;
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;
+}
+.consent p{font-size:.9rem;color:var(--ink);margin:0}
+.consent a{text-decoration:underline}
+.consent .row{display:flex;gap:10px;align-items:center}
+.consent .btn{padding:11px 22px;font-size:.9rem}
+@media(max-width:768px){
+  body.has-mobile-bar .consent{bottom:86px}
 }

@@ -124,8 +124,12 @@
         <label for="message">How can we help?</label>
         <textarea id="message" name="message" placeholder="Tell us about your venue, number of sites, and what you'd like to achieve..."></textarea>
       </div>
+      <div class="field" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:16px">
+        <input type="checkbox" id="consent" name="consent" required style="width:auto;flex:0 0 auto;margin-top:4px">
+        <label for="consent" style="font-weight:400;font-size:.9rem;margin:0;color:var(--muted)">I agree to Monk Food storing my details and contacting me about my enquiry, in line with the <a href="privacy" style="text-decoration:underline;color:var(--black)">Privacy Policy</a>.</label>
+      </div>
       <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Contact Sales →</button>
-      <p class="form-note">By submitting, you agree to be contacted by the Monk Food team about your enquiry.</p>
+      <p class="form-note">We'll only use your details to respond to this enquiry. See our <a href="privacy" style="text-decoration:underline">Privacy Policy</a>.</p>
     </form>
   </div>
 </section>
@@ -164,7 +168,7 @@
     </div>
   </div>
   <div class="container footer-bottom">
-    <span>© 2026 Monk Food. All rights reserved.</span>
+    <span>© 2026 Monk Food. All rights reserved. · <a href="privacy" style="color:inherit;text-decoration:underline">Privacy Policy</a></span>
     <span>Made for hospitality 🍽️</span>
   </div>
 </footer>

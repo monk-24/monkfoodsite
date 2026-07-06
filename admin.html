@@ -281,7 +281,7 @@
     var urls=[
       [s+'/','weekly','1.0'],[s+'/services','monthly','0.8'],
       [s+'/about','monthly','0.6'],[s+'/contact','monthly','0.7'],
-      [s+'/blog/','weekly','0.9']
+      [s+'/blog/','weekly','0.9'],[s+'/privacy','yearly','0.3']
     ];
     var body=urls.map(function(u){return '  <url><loc>'+escHtml(u[0])+'</loc><changefreq>'+u[1]+'</changefreq><priority>'+u[2]+'</priority></url>';});
     posts.forEach(function(p){
@@ -348,7 +348,7 @@
       '<div><h4>Product</h4><ul><li><a href="../services">Online Ordering</a></li><li><a href="../services">EPOS Solutions</a></li><li><a href="../services">QR Code Ordering</a></li></ul></div>'+
       '<div><h4>Company</h4><ul><li><a href="../about">About Us</a></li><li><a href="./">Blog</a></li><li><a href="../contact">Contact</a></li></ul></div>'+
       '<div><h4>Get in touch</h4><ul><li><a href="mailto:monkfoodanalystic@gmail.com">monkfoodanalystic@gmail.com</a></li><li><a href="tel:+443300435064">📞 +44 (0)330 043 5064</a></li><li style="line-height:1.5">📍 Office 9500ee, 3 Fitzroy Place, Area 1/1 Fitzroy Place, Sauchiehall Street, Glasgow, Scotland, G3 7RH</li></ul></div>'+
-      '</div><div class="container footer-bottom"><span>© 2026 Monk Food. All rights reserved.</span><span>Made for hospitality 🍽️</span></div></footer>\n'+
+      '</div><div class="container footer-bottom"><span>© 2026 Monk Food. All rights reserved. · <a href="../privacy" style="color:inherit;text-decoration:underline">Privacy Policy</a></span><span>Made for hospitality 🍽️</span></div></footer>\n'+
       '<script src="../assets/main.js"><\/script>\n</body>\n</html>\n';
   }
 

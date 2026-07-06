@@ -117,3 +117,24 @@ document.addEventListener("submit", function (e) {
   document.body.appendChild(bar);
   document.body.classList.add("has-mobile-bar");
 })();
+
+/* 6. GDPR consent notice — essential/no-tracking; remembers dismissal. */
+(function () {
+  if (document.body.classList.contains("admin-body")) return;
+  try { if (localStorage.getItem("mf_consent") === "1") return; } catch (e) {}
+  var inBlog = location.pathname.indexOf("/blog/") > -1;
+  var privacyHref = (inBlog ? "../" : "") + "privacy";
+  var box = document.createElement("div");
+  box.className = "consent";
+  box.innerHTML =
+    '<p>We use only essential storage — no advertising or tracking cookies. Web fonts are served by Google Fonts. See our <a href="' +
+    privacyHref + '">Privacy Policy</a>.</p>' +
+    '<div class="row"><button class="btn btn-primary" id="consentOk">Got it</button>' +
+    '<a class="btn btn-ghost" href="' + privacyHref + '">Learn more</a></div>';
+  document.body.appendChild(box);
+  var ok = document.getElementById("consentOk");
+  if (ok) ok.addEventListener("click", function () {
+    try { localStorage.setItem("mf_consent", "1"); } catch (e) {}
+    box.remove();
+  });
+})();
