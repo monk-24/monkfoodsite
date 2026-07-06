@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="robots" content="noindex">
+<title>Page not found — Monk Food</title>
+<script>
+/* If a URL has a trailing slash (e.g. /admin/), retry without it so
+   GitHub Pages serves the matching file (/admin -> admin.html). */
+(function () {
+  var p = location.pathname;
+  if (p.length > 1 && p.charAt(p.length - 1) === "/") {
+    location.replace(p.slice(0, -1) + location.search + location.hash);
+  }
+})();
+</script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,sans-serif;
+    background:#f2f1ed;color:#161616;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+  .wrap{max-width:460px}
+  .logo{font-weight:700;letter-spacing:.28em;font-size:.9rem;color:#0d0d0d;margin-bottom:28px}
+  h1{font-size:clamp(4rem,18vw,7rem);font-weight:700;letter-spacing:-.04em;line-height:1;color:#0d0d0d}
+  p{color:#6b6a65;font-size:1.05rem;margin:14px 0 26px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:#0d0d0d;color:#fff;font-weight:600;
+    padding:14px 28px;border-radius:999px;text-decoration:none;border:1.5px solid #0d0d0d;transition:.2s}
+  .btn:hover{background:#fff;color:#0d0d0d}
+  .links{margin-top:26px;font-size:.92rem}
+  .links a{color:#6b6a65;text-decoration:none;margin:0 4px}
+  .links a:hover{color:#0d0d0d}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">MONK FOOD</div>
+    <h1>404</h1>
+    <p>Sorry, we couldn't find that page.</p>
+    <a class="btn" href="/">← Back to home</a>
+    <p class="links"><a href="/services">Services</a> · <a href="/blog/">Blog</a> · <a href="/about">About</a> · <a href="/contact">Contact</a></p>
+  </div>
+</body>
+</html>
