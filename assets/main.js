@@ -112,7 +112,7 @@ document.addEventListener("submit", function (e) {
   var bar = document.createElement("div");
   bar.className = "mobile-bar";
   bar.innerHTML =
-    '<a class="call" href="tel:+443300435064">📞 Call</a>' +
+    '<a class="call" href="tel:03300435064">📞 Call</a>' +
     '<a class="sales" href="' + contactHref + '">Contact Sales</a>';
   document.body.appendChild(bar);
   document.body.classList.add("has-mobile-bar");
