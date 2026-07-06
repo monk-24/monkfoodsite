@@ -31,4 +31,4 @@ User-agent: CCBot
 Allow: /
 
 # Update the domain below to your live site, then keep it in sync.
-Sitemap: https://REPLACE-WITH-YOUR-DOMAIN/sitemap.xml
+Sitemap: https://monkfood.co.uk/sitemap.xml

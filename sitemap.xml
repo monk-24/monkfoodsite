@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Auto-updated by the admin panel when you publish posts.
-     Replace REPLACE-WITH-YOUR-DOMAIN with your live domain (also set "Site URL" in /admin). -->
+<!-- Auto-updated by the admin panel when you publish posts. Domain: monkfood.co.uk -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/services</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/about</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/contact</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://REPLACE-WITH-YOUR-DOMAIN/blog/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://monkfood.co.uk/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://monkfood.co.uk/services</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://monkfood.co.uk/about</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://monkfood.co.uk/contact</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://monkfood.co.uk/blog/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
 </urlset>
