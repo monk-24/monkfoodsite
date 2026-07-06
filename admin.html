@@ -99,6 +99,7 @@
       </div>
 
       <div class="admin-status" id="publishStatus"></div>
+      <button class="btn-sm" id="newPostBtn" style="display:none;margin-bottom:12px">✕ Cancel edit / start a new post</button>
       <button class="btn btn-primary" id="publishBtn" style="width:100%;justify-content:center">Publish post →</button>
     </div>
 
@@ -122,6 +123,9 @@
   var cfg = null;
   var cover = null; // {b64, ext}
   var slugTouched = false;
+  var editingSlug = null;   // slug being edited, or null for a new post
+  var editingCover = null;  // existing cover path to keep if no new cover uploaded
+  var editingDate = null;   // original publish date to preserve
   var $ = function(id){return document.getElementById(id);};
 
   // ---------- helpers ----------
@@ -362,7 +366,9 @@
     try{
       status(st,'info','Loading current posts…');
       var posts=await readPosts();
-      if(posts.some(function(p){return p.slug===slug;})){
+      if(editingSlug){
+        slug=editingSlug; // keep the same URL when editing
+      } else if(posts.some(function(p){return p.slug===slug;})){
         slug=slug+'-'+Date.now().toString().slice(-4);
       }
 
@@ -386,44 +392,106 @@
       var contentHtml=holder.innerHTML.trim();
       if(!contentHtml){status(st,'err','Please write some post content.');$('publishBtn').disabled=false;return;}
 
-      // cover
+      // cover: new upload wins; otherwise keep the existing one when editing
       var coverRel=null, coverAbs=null;
       if(cover){
         coverRel='images/'+slug+'-cover.'+cover.ext;
         status(st,'info','Uploading cover image…');
         await putFile('blog/'+coverRel,cover.b64,'blog: cover for '+slug);
         coverAbs=cfg.siteUrl+'/blog/'+coverRel;
+      } else if(editingSlug && editingCover){
+        coverRel=editingCover;
+        coverAbs=cfg.siteUrl+'/blog/'+editingCover;
       }
 
       var now=new Date();
+      var isoDate=(editingSlug && editingDate) ? editingDate : now.toISOString();
       var d={
         slug:slug,title:title,description:desc,tags:tags,author:author,
         contentHtml:contentHtml,coverRel:coverRel,coverAbs:coverAbs,
-        dateISO:now.toISOString(),
-        dateHuman:now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+        dateISO:isoDate,
+        dateHuman:new Date(isoDate).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
         readingTime:readingTime(contentHtml)
       };
 
-      status(st,'info','Publishing post page…');
-      await putText('blog/'+slug+'.html',buildPostHtml(d),'blog: publish '+slug);
+      var wasEditing=!!editingSlug;
+      status(st,'info',wasEditing?'Updating post page…':'Publishing post page…');
+      await putText('blog/'+slug+'.html',buildPostHtml(d),(wasEditing?'blog: update ':'blog: publish ')+slug);
 
       status(st,'info','Updating blog index…');
-      posts.unshift({slug:slug,title:title,description:desc,cover:coverRel,tags:tags,author:author,date:d.dateISO,readingTime:d.readingTime});
+      var entry={slug:slug,title:title,description:desc,cover:coverRel,tags:tags,author:author,date:d.dateISO,readingTime:d.readingTime};
+      var exIdx=posts.map(function(p){return p.slug;}).indexOf(slug);
+      if(exIdx>=0) posts[exIdx]=entry; else posts.unshift(entry);
       await putText('blog/posts.json',JSON.stringify(posts,null,2),'blog: index '+slug);
 
       status(st,'info','Updating sitemap…');
       await putText('sitemap.xml',buildSitemap(posts),'blog: sitemap '+slug);
 
-      status(st,'ok','Published! Your post is live at '+cfg.siteUrl+'/blog/'+slug+' (GitHub Pages can take a minute to update).');
-      $('pTitle').value='';$('pSlug').value='';$('pDesc').value='';$('pTags').value='';
-      $('editor').innerHTML='';cover=null;slugTouched=false;
-      $('coverPreview').style.display='none';$('coverDrop').textContent='Click to upload a cover image (16:9 works best)';
+      status(st,'ok',(wasEditing?'Updated! ':'Published! ')+'Your post is live at '+cfg.siteUrl+'/blog/'+slug+' (GitHub Pages can take a minute to update).');
+      resetWriteForm();
       loadManage();
     }catch(e){
       status(st,'err','Publish failed.',e.message);
     }finally{
       $('publishBtn').disabled=false;
     }
+  }
+
+  // ---------- edit / reset ----------
+  function resetWriteForm(){
+    $('pTitle').value='';$('pSlug').value='';$('pDesc').value='';$('pTags').value='';
+    $('pAuthor').value='Monk Food Team';
+    $('editor').innerHTML='';cover=null;slugTouched=false;
+    editingSlug=null;editingCover=null;editingDate=null;
+    $('coverPreview').style.display='none';$('coverImg').removeAttribute('src');
+    $('coverDrop').textContent='Click to upload a cover image (16:9 works best)';
+    $('newPostBtn').style.display='none';
+    $('publishBtn').textContent='Publish post →';
+    $('publishStatus').className='admin-status';$('publishStatus').innerHTML='';
+  }
+  function goTab(name){
+    document.querySelectorAll('.pill-tabs button').forEach(function(x){
+      x.classList.toggle('active',x.dataset.tab===name);
+    });
+    $('tab-write').style.display=name==='write'?'block':'none';
+    $('tab-manage').style.display=name==='manage'?'block':'none';
+  }
+  async function editPost(slug){
+    var st=$('manageStatus');
+    try{
+      status(st,'info','Loading "'+slug+'" for editing…');
+      var posts=await readPosts();
+      var meta=posts.filter(function(p){return p.slug===slug;})[0];
+      if(!meta){status(st,'err','Post not found in list.');return;}
+      var f=await getFile('blog/'+slug+'.html');
+      if(!f){status(st,'err','Could not load the post file.');return;}
+      var m=f.text.match(/<div class="prose">([\s\S]*?)<\/div>\s*<\/article>/);
+      var body=m?m[1]:'';
+
+      // populate the Write form
+      $('pTitle').value=meta.title||'';
+      $('pSlug').value=slug; slugTouched=true;
+      $('pDesc').value=meta.description||'';
+      $('pTags').value=(meta.tags||[]).join(', ');
+      $('pAuthor').value=meta.author||'Monk Food Team';
+      $('editor').innerHTML=body;
+
+      editingSlug=slug; editingDate=meta.date||null; editingCover=meta.cover||null; cover=null;
+      if(meta.cover){
+        $('coverImg').src='blog/'+meta.cover;
+        $('coverPreview').style.display='block';
+        $('coverDrop').textContent='Current cover kept — click to replace';
+      }else{
+        $('coverPreview').style.display='none';
+        $('coverDrop').textContent='Click to upload a cover image (16:9 works best)';
+      }
+      $('newPostBtn').style.display='inline-flex';
+      $('publishBtn').textContent='Update post →';
+      status($('publishStatus'),'info','Editing "'+meta.title+'". Make your changes and press Update post.');
+      status(st,'');$('manageStatus').className='admin-status';$('manageStatus').innerHTML='';
+      goTab('write');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }catch(e){status(st,'err','Could not load post for editing.',e.message);}
   }
 
   // ---------- manage ----------
@@ -440,9 +508,13 @@
         row.innerHTML=thumb+
           '<div class="pr-info"><strong>'+escHtml(p.title)+'</strong>'+
           '<span>/blog/'+escHtml(p.slug)+' · '+escHtml((p.date||'').slice(0,10))+'</span></div>'+
+          '<button class="btn-sm" data-edit="'+escAttr(p.slug)+'">Edit</button>'+
           '<a class="btn-sm" href="blog/'+escAttr(p.slug)+'" target="_blank">View</a>'+
           '<button class="btn-sm btn-danger" data-slug="'+escAttr(p.slug)+'">Delete</button>';
         wrap.appendChild(row);
+      });
+      wrap.querySelectorAll('[data-edit]').forEach(function(b){
+        b.addEventListener('click',function(){editPost(b.dataset.edit);});
       });
       wrap.querySelectorAll('.btn-danger').forEach(function(b){
         b.addEventListener('click',function(){delPost(b.dataset.slug);});
@@ -484,6 +556,7 @@
 
   $('connectBtn').addEventListener('click',connect);
   $('publishBtn').addEventListener('click',publish);
+  $('newPostBtn').addEventListener('click',resetWriteForm);
   $('logoutBtn').addEventListener('click',function(){localStorage.removeItem(LS);sessionStorage.removeItem('mf_admin_unlocked');location.reload();});
   initEditor();initCover();initTitle();initTabs();
 
