@@ -7,6 +7,8 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /product-online-ordering
 Disallow: /product-online-ordering.html
+Disallow: /test-stripe
+Disallow: /test-stripe.html
 
 # AI / LLM crawlers (used to answer people's questions in chat assistants)
 User-agent: GPTBot
