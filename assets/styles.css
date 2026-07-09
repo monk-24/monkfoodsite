@@ -455,3 +455,45 @@ html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}
 @media(max-width:768px){
   body.has-mobile-bar .consent{bottom:86px}
 }
+
+/* ===== Photography / Just Eat–style visuals ===== */
+.hero-photo{position:relative;border-radius:26px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/5;background:var(--black) center/cover no-repeat}
+.hero-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,13,.12),rgba(13,13,13,.62));z-index:1}
+.hero-photo .chip{position:absolute;z-index:2;background:rgba(255,255,255,.95);border-radius:999px;padding:9px 15px;font-weight:600;font-size:.85rem;display:inline-flex;align-items:center;gap:7px;box-shadow:var(--shadow-sm)}
+.hero-photo .chip.tl{top:16px;left:16px}
+.hero-photo .order-card{position:absolute;z-index:2;left:16px;right:16px;bottom:16px;background:rgba(255,255,255,.97);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+.hero-photo .order-card .r{display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.hero-photo .order-card .r+.r{margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
+.hero-photo .order-card .price{font-family:var(--display);font-weight:700}
+.hero-photo .order-card .muted{color:var(--muted);font-size:.78rem;font-weight:500}
+
+/* food tiles */
+.food-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.food-tile{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;background:var(--cream-2) center/cover no-repeat;transition:.25s cubic-bezier(.4,0,.2,1)}
+.food-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 42%,rgba(0,0,0,.7));z-index:1}
+.food-tile:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.food-tile b{position:absolute;z-index:2;left:16px;bottom:14px;color:#fff;font-family:var(--display);font-size:1.05rem;font-weight:600}
+
+/* photo cards (venues) */
+.photo-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.25s cubic-bezier(.4,0,.2,1)}
+.photo-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--black)}
+.photo-card .ph{aspect-ratio:16/10;background:var(--cream-2) center/cover no-repeat}
+.photo-card .bd{padding:24px}
+.photo-card h3{margin-bottom:8px}
+.photo-card p{color:var(--muted);font-size:.96rem}
+
+/* full-width image band */
+.imgband{position:relative;border-radius:24px;overflow:hidden;display:flex;align-items:center;min-height:300px;background:var(--black) center/cover no-repeat}
+.imgband::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,13,13,.88),rgba(13,13,13,.4));z-index:1}
+.imgband .inner{position:relative;z-index:2;padding:48px;color:#fff;max-width:600px}
+.imgband h2,.imgband p{color:#fff}
+.imgband .lead{color:#dcdcdc}
+
+@media(max-width:768px){
+  .hero-photo{aspect-ratio:16/13}
+  .food-tiles{grid-template-columns:1fr 1fr;gap:12px}
+  .food-tile{aspect-ratio:1/1}
+  .imgband{min-height:0}
+  .imgband::after{background:linear-gradient(180deg,rgba(13,13,13,.5),rgba(13,13,13,.82))}
+  .imgband .inner{padding:32px 22px;max-width:none}
+}
