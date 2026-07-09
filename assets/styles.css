@@ -341,7 +341,9 @@ form.card{padding:36px}
 .lock-card .field{margin-bottom:14px}
 
 /* ===== Mobile-first optimisations (90% of traffic is mobile) ===== */
-html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip;-webkit-text-size-adjust:100%}
+/* keep the header pinned while scrolling on all devices */
+.site-header{position:-webkit-sticky;position:sticky;top:0}
 
 @media(max-width:768px){
   :root{--radius:14px}
