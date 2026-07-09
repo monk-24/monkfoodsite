@@ -376,7 +376,7 @@ html,body{overflow-x:clip;-webkit-text-size-adjust:100%}
   .hero{
     background-image:
       linear-gradient(180deg,rgba(245,243,238,.90) 0%,rgba(245,243,238,.86) 38%,rgba(245,243,238,.55) 66%,rgba(245,243,238,.42) 100%),
-      url('img/hero-food.jpg');
+      url('img/hero-mobile.jpg');
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
