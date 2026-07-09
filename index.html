@@ -18,7 +18,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=3">
+<link rel="stylesheet" href="assets/styles.css?v=4">
 </head>
 <body>
 
@@ -27,7 +27,13 @@
     <a href="./" class="brand"><img src="assets/logo.png" alt="Monk Food logo"> Monk Food</a>
     <ul class="nav-links">
       <li><a href="./" class="active">Home</a></li>
-      <li><a href="services">Services</a></li>
+      <li class="has-dropdown"><span tabindex="0">Products <span class="caret">▾</span></span>
+        <ul class="dropdown">
+          <li><a href="online-ordering">Online Ordering</a></li>
+          <li><a href="epos-solutions">EPOS Solutions</a></li>
+          <li><a href="qr-code-ordering">QR Code Ordering</a></li>
+        </ul>
+      </li>
       <li><a href="about">About</a></li>
       <li><a href="blog/">Blog</a></li>
       <li><a href="contact">Contact</a></li>
@@ -49,7 +55,7 @@
       <p class="lead">Online ordering, EPOS and QR code ordering, backed by a team that actively drives customers and orders to your door. Restaurants, takeaways and bars get the full platform and real sales growth — not just software.</p>
       <div class="hero-actions">
         <a href="contact" class="btn btn-primary">Contact Sales →</a>
-        <a href="services" class="btn btn-ghost">Explore Services</a>
+        <a href="online-ordering" class="btn btn-ghost">Explore Products</a>
       </div>
       <div class="hero-stats">
         <div><div class="num">+40%</div><div class="lbl">Online order growth</div></div>
@@ -102,7 +108,7 @@
     </div>
   </div>
   <div class="container center" style="margin-top:36px">
-    <a href="services" class="btn btn-ghost">See all services →</a>
+    <a href="contact" class="btn btn-ghost">Talk to our team →</a>
   </div>
 </section>
 

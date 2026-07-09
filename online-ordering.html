@@ -9,7 +9,7 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=3">
+<link rel="stylesheet" href="assets/styles.css?v=4">
 </head>
 <body>
 
@@ -18,7 +18,13 @@
     <a href="./" class="brand"><img src="assets/logo.png" alt="Monk Food logo"> Monk Food</a>
     <ul class="nav-links">
       <li><a href="./">Home</a></li>
-      <li><a href="services">Services</a></li>
+      <li class="has-dropdown"><span tabindex="0">Products <span class="caret">▾</span></span>
+        <ul class="dropdown">
+          <li><a href="online-ordering">Online Ordering</a></li>
+          <li><a href="epos-solutions">EPOS Solutions</a></li>
+          <li><a href="qr-code-ordering">QR Code Ordering</a></li>
+        </ul>
+      </li>
       <li><a href="about">About</a></li>
       <li><a href="blog/">Blog</a></li>
       <li><a href="contact">Contact</a></li>
@@ -91,10 +97,42 @@
   </div>
 </section>
 
+<!-- Delivery & collection -->
 <section>
+  <div class="container split">
+    <div class="hero-photo" style="background-image:url('assets/img/venue-takeaway.jpg');aspect-ratio:4/3"></div>
+    <div>
+      <h2>Delivery &amp; collection, sorted</h2>
+      <p class="lead" style="margin-bottom:22px">Let customers order exactly how they want — delivered to the door or ready to grab — all from one branded site.</p>
+      <ul style="list-style:none">
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Set your own delivery zones and fees</li>
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Collection slots that protect your kitchen at peak</li>
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Live order tracking and status updates</li>
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Apple Pay, Google Pay and all major cards</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Marketing -->
+<section class="section-cream">
   <div class="container center">
     <h2>Marketing built right in</h2>
-    <p class="lead">We do the heavy lifting to drive traffic to your new online ordering site through local SEO, social media, and retention campaigns.</p>
+    <p class="lead">We do the heavy lifting to drive traffic to your new site through local SEO, social media and retention campaigns — so the orders actually come in, not just the technology.</p>
+  </div>
+</section>
+
+<!-- Busy kitchen -->
+<section>
+  <div class="container">
+    <div class="imgband" style="background-image:url('assets/img/svc-kitchen.jpg')">
+      <div class="inner">
+        <span class="eyebrow">More orders, more often</span>
+        <h2>Keep your kitchen busy — on your terms</h2>
+        <p class="lead">Direct orders flow straight to your kitchen printer or screen, ticket after ticket, at full margin. No middleman, no 30% cut — just a busier pass and a healthier bottom line.</p>
+        <a href="contact" class="btn btn-light" style="margin-top:8px">Get set up →</a>
+      </div>
+    </div>
   </div>
 </section>
 

@@ -9,7 +9,7 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=3">
+<link rel="stylesheet" href="assets/styles.css?v=4">
 </head>
 <body>
 
@@ -18,7 +18,13 @@
     <a href="./" class="brand"><img src="assets/logo.png" alt="Monk Food logo"> Monk Food</a>
     <ul class="nav-links">
       <li><a href="./">Home</a></li>
-      <li><a href="services">Services</a></li>
+      <li class="has-dropdown"><span tabindex="0">Products <span class="caret">▾</span></span>
+        <ul class="dropdown">
+          <li><a href="online-ordering">Online Ordering</a></li>
+          <li><a href="epos-solutions">EPOS Solutions</a></li>
+          <li><a href="qr-code-ordering">QR Code Ordering</a></li>
+        </ul>
+      </li>
       <li><a href="about">About</a></li>
       <li><a href="blog/">Blog</a></li>
       <li><a href="contact">Contact</a></li>
@@ -81,6 +87,20 @@
   </div>
 </section>
 
+<!-- Busy kitchen -->
+<section>
+  <div class="container">
+    <div class="imgband" style="background-image:url('assets/img/svc-kitchen.jpg')">
+      <div class="inner">
+        <span class="eyebrow">Kitchen in sync</span>
+        <h2>Every order, straight to the pass</h2>
+        <p class="lead">Dine-in, collection and online tickets all fire to your kitchen printers and screens in real time — routed by course and station, so nothing slips on your busiest night.</p>
+        <a href="contact" class="btn btn-light" style="margin-top:8px">Book a demo →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Why it wins -->
 <section>
   <div class="container center">
@@ -91,6 +111,24 @@
     <div class="card"><div class="ico">⚡</div><h3>Lightning-fast service</h3><p>Fire orders in seconds, split bills without the maths, and keep the queue moving when it's slammed.</p></div>
     <div class="card"><div class="ico">🔌</div><h3>Never goes down</h3><p>Internet drops? No problem. The till keeps taking orders and card payments, then syncs when you're back.</p></div>
     <div class="card"><div class="ico">🔗</div><h3>One menu, everywhere</h3><p>Change a price once and it updates your till, online ordering and QR menus instantly — no double entry.</p></div>
+  </div>
+</section>
+
+<!-- Reporting -->
+<section class="section-cream">
+  <div class="container split">
+    <div>
+      <span class="eyebrow">Know your numbers</span>
+      <h2>Live reporting that pays for itself</h2>
+      <p class="lead" style="margin-bottom:22px">See exactly what's selling, when and by whom — from any device, anywhere. Spot your winners, cut the waste and roster smarter.</p>
+      <ul style="list-style:none">
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Real-time sales by channel, site and team member</li>
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Best-sellers, quiet hours and peak-time insights</li>
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Live stock control with low-stock alerts</li>
+        <li style="padding-left:26px;position:relative;margin-bottom:10px"><span style="position:absolute;left:0;color:var(--black);font-weight:700">✓</span> Export to your accountant in a couple of clicks</li>
+      </ul>
+    </div>
+    <div class="hero-photo" style="background-image:url('assets/img/svc-reports.jpg');aspect-ratio:4/3"></div>
   </div>
 </section>
 
